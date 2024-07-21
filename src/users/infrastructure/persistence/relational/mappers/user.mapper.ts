@@ -52,6 +52,13 @@ export class UserMapper {
       status.id = Number(domainEntity.status.id);
     }
 
+    // let crypto: CryptoEntity | undefined = undefined;
+
+    // if (domainEntity.crypto) {
+    //   crypto = new CryptoEntity();
+    //   crypto.accountNumber = domainEntity.crypto.accountNumber;
+    // }
+
     const persistenceEntity = new UserEntity();
     if (domainEntity.id && typeof domainEntity.id === 'number') {
       persistenceEntity.id = domainEntity.id;

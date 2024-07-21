@@ -205,9 +205,9 @@ export class UsersService {
 
     return this.usersRepository.update(id, clonedPayload);
   }
+Z
 
   async remove(id: User['id']): Promise<void> {
     await this.usersRepository.remove(id);
   }
-
 }

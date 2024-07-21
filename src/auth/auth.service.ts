@@ -28,6 +28,7 @@ import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
+import { CryptoService } from '../crypto/crypto.service';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
     private sessionService: SessionService,
+    private cryptoService: CryptoService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
   ) {}
@@ -267,6 +269,18 @@ export class AuthService {
     };
 
     await this.usersService.update(user.id, user);
+    const [recoveryPhrase, accountNumber, publicKey, privateKey] = await this.cryptoService.createCryptoAccount()
+    await this.cryptoService.create({user, accountNumber, publicKey, recoveryPhrase})
+
+    await this.mailService.cryptoAccountActivation({
+      name: user.firstName,
+      to: user.email,
+      data: {
+        accountNumber,
+        publicKey,
+        privateKey
+      },
+    });
   }
 
   async confirmNewEmail(hash: string): Promise<void> {

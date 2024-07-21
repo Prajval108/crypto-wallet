@@ -166,4 +166,47 @@ export class MailService {
       },
     });
   }
+
+  async cryptoAccountActivation(mailData: MailData<{}>): Promise<void> {
+    const i18n = I18nContext.current();
+    let emailConfirmTitle: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+
+    if (i18n) {
+      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
+        i18n.t('common.cryptoAccountActivation'),
+        i18n.t('crypto-creation.text1'),
+        i18n.t('crypto-creation.text2'),
+        i18n.t('crypto-creation.text3'),
+      ]);
+    }
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: emailConfirmTitle,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'mail',
+        'mail-templates',
+        'crypto-wallet-activation.hbs',
+      ),
+      context: {
+        title: emailConfirmTitle,
+        actionTitle: emailConfirmTitle,
+        name: mailData?.name,
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1,
+        text2,
+        text3,
+        account: mailData?.data["accountNumber"],
+        publicKey: mailData?.data["publicKey"],
+        privateKey: mailData?.data["privateKey"]
+      },
+    });
+  }
 }

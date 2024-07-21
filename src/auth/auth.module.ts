@@ -9,11 +9,13 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { MailModule } from '../mail/mail.module';
 import { SessionModule } from '../session/session.module';
 import { UsersModule } from '../users/users.module';
+import { CryptoModule } from '../crypto/crypto.module';
 
 @Module({
   imports: [
     UsersModule,
     SessionModule,
+    CryptoModule,
     PassportModule,
     MailModule,
     JwtModule.register({}),

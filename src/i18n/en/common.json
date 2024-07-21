@@ -1,4 +1,5 @@
 {
-  "confirmEmail": "Confirm email",
-  "resetPassword": "Reset password"
+  "confirmEmail": "Confirm Email",
+  "resetPassword": "Reset Password",
+  "cryptoAccountActivation": "Crypto Account Details"
 }
