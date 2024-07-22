@@ -98,6 +98,22 @@ export class AuthController {
     return this.service.me(request.user);
   }
 
+
+  @ApiBearerAuth()
+  @SerializeOptions({
+    groups: ['me'],
+  })
+  @Post('resendEmail')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse({
+    type: User,
+  })
+  @HttpCode(HttpStatus.OK)
+  public sendMailForVerification(@Request() request): Promise<NullableType<any>> {
+    return this.service.sentMailForVerification(request.user);
+  }
+  
+
   @ApiBearerAuth()
   @ApiOkResponse({
     type: RefreshResponseDto,

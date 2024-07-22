@@ -15,12 +15,19 @@ import { RoleEnum } from '../roles/roles.enum';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
+import { MailService } from 'src/mail/mail.service';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from 'src/config/config.type';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly filesService: FilesService,
+    private mailService: MailService,
+    private jwtService: JwtService,
+    private configService: ConfigService<AllConfigType>,
   ) {}
 
   async create(createProfileDto: CreateUserDto): Promise<User> {
@@ -91,7 +98,29 @@ export class UsersService {
       }
     }
 
-    return this.usersRepository.create(clonedPayload);
+    const user = await this.usersRepository.create(clonedPayload);
+    const hash = await this.jwtService.signAsync(
+      {
+        confirmEmailUserId: user.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
+
+    await this.mailService.userSignUp({
+      name: user.firstName,
+      to: user.email,
+      data: {
+        hash,
+      },
+    });
+    return user
   }
 
   findManyWithPagination({

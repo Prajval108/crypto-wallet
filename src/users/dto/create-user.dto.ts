@@ -39,15 +39,15 @@ export class CreateUserDto {
   @IsOptional()
   photo?: FileDto | null;
 
-  @ApiPropertyOptional({ type: RoleDto })
+  @ApiPropertyOptional({ type: RoleDto, })
   @IsOptional()
   @Type(() => RoleDto)
   role?: RoleDto | null;
 
-  @ApiPropertyOptional({ type: StatusDto })
+  @ApiPropertyOptional({ type: StatusDto})
   @IsOptional()
   @Type(() => StatusDto)
-  status?: StatusDto;
+  status: StatusDto = { id: 2 };
 
   hash?: string | null;
 }

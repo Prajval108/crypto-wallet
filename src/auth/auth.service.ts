@@ -1,4 +1,5 @@
 import {
+  HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
@@ -29,6 +30,12 @@ import { SessionService } from '../session/session.service';
 import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
 import { CryptoService } from '../crypto/crypto.service';
+
+export class AlreadyReportedException extends HttpException {
+  constructor() {
+    super('emailAlreadyVerified', 208);
+  }
+}
 
 @Injectable()
 export class AuthService {
@@ -226,6 +233,36 @@ export class AuthService {
     await this.mailService.userSignUp({
       name: dto.firstName,
       to: dto.email,
+      data: {
+        hash,
+      },
+    });
+  }
+
+  async sentMailForVerification(userJwtPayload: JwtPayloadType): Promise<void> {
+    const user = await this.usersService.findById(userJwtPayload.id);
+
+    if (user?.accountNumber) {
+      throw new AlreadyReportedException();
+    }
+
+    const hash = await this.jwtService.signAsync(
+      {
+        confirmEmailUserId: user?.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
+
+    await this.mailService.userSignUp({
+      name: user?.firstName,
+      to: user?.email,
       data: {
         hash,
       },
