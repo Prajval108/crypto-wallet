@@ -128,7 +128,4 @@ export class UserEntity extends EntityRelationalHelper {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToOne(() => CryptoEntity, (crypto) => crypto.user)
-  crypto?: CryptoEntity;
-
 }

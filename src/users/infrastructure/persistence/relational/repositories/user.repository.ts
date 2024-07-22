@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {  FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
@@ -61,44 +61,36 @@ export class UsersRelationalRepository implements UserRepository {
   }
 
   async findById(id: User['id']): Promise<NullableType<any>> {
-    // const res = await this.usersRepository.findOne({
-    //   where: {
-    //     id: Number(id),
-    //   },
-    //   relations: {
-    //     crypto: true,
-    //   },
-    // });
     const userEntity = await this.usersRepository.findOne({
       where: { id: Number(id) },
     });
-    // const cryptoEntity = await this.cryptoRepository.findOne({
-    //   where: { user: userEntity? userEntity: false  },
-    // });
-    const res  = userEntity ? UserMapper.toDomain(userEntity) : null;
+    let accountNumber: string | undefined;
+    if (userEntity?.status?.name === 'Active') {
+      const cryptoEntity = await this.cryptoRepository.findOne({
+        where: { userId: userEntity?.id },
+      });
+      accountNumber = cryptoEntity?.accountNumber;
+    }
 
-    return res;
-  }   
+    return userEntity ? UserMapper.toDomain(userEntity, accountNumber) : null;
+  }
 
   async findByEmail(email: User['email']): Promise<NullableType<any>> {
     if (!email) return null;
 
-    // const res = await this.
-    // usersRepository.find({
-    //   where: {
-    //     email,
-    //   },
-    //   relations: {
-    //     crypto: true,
-    //   },
-    // });
-
     const entity = await this.usersRepository.findOne({
       where: { email },
     });
-    const res = entity ? UserMapper.toDomain(entity) : null;
+    let accountNumber: string | undefined;
+    if (entity?.status?.name === 'Active') {
+      const cryptoEntity = await this.cryptoRepository.findOne({
+        where: { userId: entity?.id },
+      });
+      accountNumber = cryptoEntity?.accountNumber;
+    }
+    const res = entity ? UserMapper.toDomain(entity, accountNumber) : null;
 
-    return res
+    return res;
   }
 
   async findBySocialIdAndProvider({

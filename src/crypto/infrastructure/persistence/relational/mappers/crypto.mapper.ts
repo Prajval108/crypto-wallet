@@ -7,9 +7,7 @@ export class CryptoMapper {
   static toDomain(raw: CryptoEntity): Crypto {
     const domainEntity = new Crypto();
     domainEntity.id = raw.id;
-    if (raw.user) {
-      domainEntity.user = UserMapper.toDomain(raw.user);
-    }
+    domainEntity.userId = raw.userId
     domainEntity.accountNumber = raw.accountNumber;
     domainEntity.publicKey = raw.publicKey;
     domainEntity.recoveryPhrase = raw.recoveryPhrase;
@@ -20,15 +18,12 @@ export class CryptoMapper {
   }
 
   static toPersistence(domainEntity: Crypto): CryptoEntity {
-    const user = new UserEntity();
-    user.id = Number(domainEntity.user.id);
-
     const persistenceEntity = new CryptoEntity();
     if (domainEntity.id && typeof domainEntity.id === 'number') {
       persistenceEntity.id = domainEntity.id;
     }
     persistenceEntity.accountNumber = domainEntity.accountNumber;
-    persistenceEntity.user = user;
+    persistenceEntity.userId = Number(domainEntity.userId);
     persistenceEntity.publicKey = domainEntity.publicKey;
     persistenceEntity.recoveryPhrase = domainEntity.recoveryPhrase;
     persistenceEntity.createdAt = domainEntity.createdAt;

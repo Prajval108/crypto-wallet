@@ -6,7 +6,7 @@ import { User } from '../../../../domain/user';
 import { UserEntity } from '../entities/user.entity';
 
 export class UserMapper {
-  static toDomain(raw: UserEntity): User {
+  static toDomain(raw: UserEntity, accountNumber?:string): User {
     const domainEntity = new User();
     domainEntity.id = raw.id;
     domainEntity.email = raw.email;
@@ -18,6 +18,9 @@ export class UserMapper {
     domainEntity.lastName = raw.lastName;
     if (raw.photo) {
       domainEntity.photo = FileMapper.toDomain(raw.photo);
+    }
+    if(accountNumber) {
+      domainEntity.accountNumber = accountNumber
     }
     domainEntity.role = raw.role;
     domainEntity.status = raw.status;
@@ -51,13 +54,6 @@ export class UserMapper {
       status = new StatusEntity();
       status.id = Number(domainEntity.status.id);
     }
-
-    // let crypto: CryptoEntity | undefined = undefined;
-
-    // if (domainEntity.crypto) {
-    //   crypto = new CryptoEntity();
-    //   crypto.accountNumber = domainEntity.crypto.accountNumber;
-    // }
 
     const persistenceEntity = new UserEntity();
     if (domainEntity.id && typeof domainEntity.id === 'number') {

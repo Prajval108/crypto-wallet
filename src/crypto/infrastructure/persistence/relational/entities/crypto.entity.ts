@@ -19,11 +19,9 @@ export class CryptoEntity extends EntityRelationalHelper {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => UserEntity, {
-    eager: true,
-  })
+  @Column()
   @Index()
-  user: UserEntity;
+  userId: number;
 
   @Column()
   accountNumber: string;

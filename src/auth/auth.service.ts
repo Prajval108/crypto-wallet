@@ -155,6 +155,8 @@ export class AuthService {
       });
 
       user = await this.usersService.findById(user.id);
+      await this.cryptoService.createCryptoAccount(Number(user?.id), user?.firstName, user?.email)
+
     }
 
     if (!user) {
@@ -269,18 +271,7 @@ export class AuthService {
     };
 
     await this.usersService.update(user.id, user);
-    const [recoveryPhrase, accountNumber, publicKey, privateKey] = await this.cryptoService.createCryptoAccount()
-    await this.cryptoService.create({user, accountNumber, publicKey, recoveryPhrase})
-
-    await this.mailService.cryptoAccountActivation({
-      name: user.firstName,
-      to: user.email,
-      data: {
-        accountNumber,
-        publicKey,
-        privateKey
-      },
-    });
+    await this.cryptoService.createCryptoAccount(Number(userId), user?.firstName, user?.email)
   }
 
   async confirmNewEmail(hash: string): Promise<void> {

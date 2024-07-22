@@ -67,13 +67,11 @@ export class User {
   })
   status?: Status;
 
+  @ApiProperty({ type: String })
+  accountNumber?: string;
+
   @ApiProperty()
   createdAt: Date;
-
-  @ApiProperty({
-    type: () => Crypto,
-  })
-  crypto?: Crypto;
 
   @ApiProperty()
   updatedAt: Date;

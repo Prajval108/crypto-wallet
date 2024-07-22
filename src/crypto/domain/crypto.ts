@@ -2,7 +2,7 @@ import { User } from '../../users/domain/user';
 
 export class Crypto {
   id: number | string;
-  user: User;
+  userId: number | string;
   accountNumber: string;
   publicKey: string;
   recoveryPhrase: string;
