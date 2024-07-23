@@ -73,7 +73,7 @@
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/prajval108"><img src="https://i.ibb.co/16mChtb/IMG-2278.jpg" width="100px;" alt="pankaj kumar"/><br /><sub><b>Pankaj Baraiya</b></sub></a><br /> title=Developer></a> </td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/prajval108"><img src="https://i.ibb.co/16mChtb/IMG-2278.jpg" width="100px;" alt="pankaj kumar"/><br /><sub><b>Pankaj Baraiya</b></sub></a><br /> title=Developer</a> </td>
 
     </tr>
   </tbody>
