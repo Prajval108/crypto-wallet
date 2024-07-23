@@ -242,7 +242,7 @@ export class AuthService {
   async sentMailForVerification(userJwtPayload: JwtPayloadType): Promise<void> {
     const user = await this.usersService.findById(userJwtPayload.id);
 
-    if (user?.accountNumber) {
+    if (user?.status) {
       throw new AlreadyReportedException();
     }
 

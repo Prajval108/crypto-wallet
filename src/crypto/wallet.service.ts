@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { generateMnemonic, mnemonicToEntropy } from 'ethereum-cryptography/bip39';
+import { generateMnemonic, mnemonicToEntropy, mnemonicToSeedSync } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import { HDKey } from 'ethereum-cryptography/hdkey';
 import { keccak256 } from 'ethereum-cryptography/keccak';
@@ -17,20 +17,23 @@ export class WalletService {
   }
   
   _getHdRootKey(_mnemonic) {
-    return HDKey.fromMasterSeed(_mnemonic);
+    const seed = mnemonicToSeedSync(_mnemonic);
+    return HDKey.fromMasterSeed(seed);
   }
   
   _generatePrivateKey(_hdRootKey, _accountIndex) {
-    return _hdRootKey.deriveChild(_accountIndex).privateKey;
+    const path = `m/44'/60'/0'/0/${_accountIndex}`;
+    return _hdRootKey.derive(path).privateKey;
   }
   
   _getPublicKey(_privateKey) {
-    return secp256k1.getPublicKey(_privateKey);
+    return secp256k1.getPublicKey(_privateKey, false);
+  }
+
+  _getEthAddress(_publicKey) {
+    return keccak256(_publicKey.slice(1)).slice(-20);
   }
   
-  _getEthAddress(_publicKey) {
-    return keccak256(_publicKey).slice(-20);
-  }
 
   retriveAccount(entropy){
     const hdRootKey = this._getHdRootKey(entropy);
@@ -42,7 +45,7 @@ export class WalletService {
   
   createAccount() {
     const { mnemonic, entropy } = this._generateMnemonic();  
-    const [accountNumber, publicKey, privateKey] = this.retriveAccount(entropy)
+    const [accountNumber, publicKey, privateKey] = this.retriveAccount(mnemonic)
     return [mnemonic, `0x${accountNumber}`, publicKey, privateKey]
   }
 
