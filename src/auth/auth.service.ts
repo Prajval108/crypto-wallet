@@ -162,8 +162,14 @@ export class AuthService {
       });
 
       user = await this.usersService.findById(user.id);
-      await this.cryptoService.createCryptoAccount(Number(user?.id), user?.firstName, user?.email)
 
+      if (process.env.CRYPTO_ACCOUNT_ACTIVATION == 'true') {
+        await this.cryptoService.createCryptoAccount(
+          Number(user?.id),
+          user?.firstName,
+          user?.email,
+        );
+      }
     }
 
     if (!user) {
@@ -242,7 +248,7 @@ export class AuthService {
   async sentMailForVerification(userJwtPayload: JwtPayloadType): Promise<void> {
     const user = await this.usersService.findById(userJwtPayload.id);
 
-    if (user?.status) {
+    if (user?.status?.id == 1) {
       throw new AlreadyReportedException();
     }
 
@@ -308,7 +314,14 @@ export class AuthService {
     };
 
     await this.usersService.update(user.id, user);
-    await this.cryptoService.createCryptoAccount(Number(userId), user?.firstName, user?.email)
+
+    if (process.env.CRYPTO_ACCOUNT_ACTIVATION == 'true') {
+      await this.cryptoService.createCryptoAccount(
+        Number(userId),
+        user?.firstName,
+        user?.email,
+      );
+    }
   }
 
   async confirmNewEmail(hash: string): Promise<void> {
